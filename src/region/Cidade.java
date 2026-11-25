@@ -14,6 +14,8 @@ public class Cidade {
     private static final int TERRITORIOS_INICIAIS = 10000;
     private static final int ALIMENTOS_INICIAIS = 500;
     private static final int HABITANTES_INICIAIS = 200;
+    private static final int TAXA_LIGA_INICIAL = 10;
+    private static final String REGULAMENTACAO_INICIAL = "Moderada";
 
     private String nome;
     private int anoAtual;
@@ -22,6 +24,8 @@ public class Cidade {
     private int territorios;
     private int alimentos;
     private int habitantes;
+    private int taxaLiga;
+    private String regulamentacao;
 
     public Cidade(String nome, Jogador dono) {
         if (!nomeValido(nome)) {
@@ -35,6 +39,8 @@ public class Cidade {
         this.territorios = TERRITORIOS_INICIAIS;
         this.alimentos = ALIMENTOS_INICIAIS;
         this.habitantes = HABITANTES_INICIAIS;
+        this.taxaLiga = TAXA_LIGA_INICIAL;
+        this.regulamentacao = REGULAMENTACAO_INICIAL;
     }
 
     public static boolean nomeValido(String nome) {
@@ -102,15 +108,25 @@ public class Cidade {
         return true;
     }
 
+    public int getTaxaLiga() { return taxaLiga; }
+
+    public void setTaxaLiga(int taxaLiga) { this.taxaLiga = taxaLiga; }
+
+    public String getRegulamentacao() { return regulamentacao; }
+
+    public void setRegulamentacao(String regulamentacao) { this.regulamentacao = regulamentacao; }
+
     public void exibirStatus() {
         System.out.println();
         System.out.println("------------- STATUS DA CIDADE -------------");
-        System.out.println("Cidade:      " + nome);
-        System.out.println("Governante:  " + dono.getTitulo() + " " + dono.getNome());
-        System.out.println("Ano atual:   " + anoAtual);
-        System.out.println("Pokedolares: " + pokedolares);
-        System.out.println("Territorios: " + territorios + " hectares");
-        System.out.println("Alimentos:   " + alimentos);
-        System.out.println("Habitantes:  " + habitantes);
+        System.out.println("Cidade:         " + nome);
+        System.out.println("Governante:     " + dono.getTitulo() + " " + dono.getNome());
+        System.out.println("Ano atual:      " + anoAtual);
+        System.out.println("Pokedolares:    " + pokedolares);
+        System.out.println("Territorios:    " + territorios + " hectares");
+        System.out.println("Alimentos:      " + alimentos);
+        System.out.println("Habitantes:     " + habitantes);
+        System.out.println("Taxa da Liga:   " + taxaLiga + "%");
+        System.out.println("Regulamentacao: " + regulamentacao);
     }
 }

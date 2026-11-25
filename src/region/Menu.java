@@ -9,12 +9,14 @@ public class Menu {
     private Cidade cidade;
     private Mercado mercado;
     private Agricultura agricultura;
+    private Governo governo;
 
     public Menu() {
         this.scanner = new Scanner(System.in);
         this.emExecucao = true;
         this.mercado = new Mercado();
         this.agricultura = new Agricultura();
+        this.governo = new Governo();
     }
 
     public void executar() {
@@ -23,7 +25,6 @@ public class Menu {
             int opcao = lerOpcao();
             processarOpcao(opcao);
         }
-        scanner.close();
     }
 
     private void exibirOpcoes() {
@@ -36,7 +37,8 @@ public class Menu {
         System.out.println("2 - Ver status da cidade");
         System.out.println("3 - Mercado");
         System.out.println("4 - Agricultura");
-        System.out.println("5 - Sobre o jogo");
+        System.out.println("5 - Governo");
+        System.out.println("6 - Sobre o jogo");
         System.out.println("0 - Sair");
         System.out.print("Escolha uma opcao: ");
     }
@@ -54,6 +56,7 @@ public class Menu {
         try {
             return Integer.parseInt(linha);
         } 
+        
         catch (NumberFormatException e) {
             return -1;
         }
@@ -64,9 +67,11 @@ public class Menu {
         if (linha == null) {
             return -1;
         }
+
         try {
             return Integer.parseInt(linha);
         } 
+        
         catch (NumberFormatException e) {
             return -1;
         }
@@ -92,6 +97,10 @@ public class Menu {
                 break;
 
             case 5:
+                abrirGoverno();
+                break;
+
+            case 6:
                 exibirSobre();
                 break;
 
@@ -134,9 +143,8 @@ public class Menu {
                 if (numero >= 1 && numero <= cidades.length) {
                     return cidades[numero - 1];
                 }
-            } catch (NumberFormatException e) {
-                // cai na mensagem de erro abaixo
-            }
+            } catch (NumberFormatException e) {}
+
             System.out.println("Opcao invalida. Digite um numero de 1 a " + cidades.length + ".");
         }
     }
@@ -203,11 +211,10 @@ public class Menu {
     private void comprarAlimentos() {
         System.out.print("Quantidade de alimentos para comprar: ");
         int quantidade = lerQuantidade();
-
         if (quantidade <= 0) {
             System.out.println("Quantidade invalida. Digite um numero maior que zero.");
         } 
-
+        
         else if (mercado.comprarAlimentos(cidade, quantidade)) {
             System.out.println("Compra realizada: " + quantidade + " alimentos por "
                     + (quantidade * mercado.getPrecoAlimento()) + " Pokedolares.");
@@ -341,6 +348,7 @@ public class Menu {
             System.out.println("Comida suficiente! Habitantes: " + habitantesAntes
                     + " -> " + habitantesDepois);
         } 
+        
         else if (habitantesDepois < habitantesAntes) {
             System.out.println("Faltou comida! Habitantes: " + habitantesAntes
                     + " -> " + habitantesDepois);
@@ -351,10 +359,111 @@ public class Menu {
         }
     }
 
+    private void abrirGoverno() {
+        if (cidade == null) {
+            System.out.println("Nenhum jogo em andamento. Escolha 1 - Novo jogo.");
+            return;
+        }
+
+        boolean noGoverno = true;
+        while (noGoverno) {
+            System.out.println();
+            System.out.println("------------------ GOVERNO ------------------");
+            System.out.println("Pokedolares: " + cidade.getPokedolares()
+                    + " | Taxa da Liga: " + cidade.getTaxaLiga() + "%"
+                    + " | Regulamentacao: " + cidade.getRegulamentacao());
+            System.out.println("1 - Arrecadar taxas (Liga Pokemon)");
+            System.out.println("2 - Definir taxa da Liga");
+            System.out.println("3 - Definir regulamentacao de convivencia");
+            System.out.println("0 - Voltar");
+            System.out.print("Escolha uma opcao: ");
+
+            int opcao = lerOpcao();
+            switch (opcao) {
+                case 1:
+                    arrecadarTaxas();
+                    break;
+
+                case 2:
+                    definirTaxaLiga();
+                    break;
+
+                case 3:
+                    definirRegulamentacao();
+                    break;
+
+                case 0:
+                    noGoverno = false;
+                    break;
+
+                default:
+                    System.out.println("Opcao invalida. Escolha uma das opcoes do governo.");
+            }
+        }
+    }
+
+    private void arrecadarTaxas() {
+        int pokedolaresAntes = cidade.getPokedolares();
+        int arrecadado = governo.arrecadarTaxas(cidade);
+
+        System.out.println("A Liga Pokemon cobrou as taxas dos habitantes e repassou "
+                + arrecadado + " Pokedolares a tesouraria de " + cidade.getNome() + ".");
+        System.out.println("Pokedolares: " + pokedolaresAntes + " -> " + cidade.getPokedolares());
+    }
+
+    private void definirTaxaLiga() {
+        System.out.print("Nova taxa da Liga em % (0 a 50): ");
+        int taxa = lerQuantidade();
+
+        if (governo.definirTaxaLiga(cidade, taxa)) {
+            System.out.println("Taxa da Liga definida em " + taxa + "%.");
+        } 
+        
+        else {
+            System.out.println("Taxa invalida. Digite um numero de 0 a 50.");
+        }
+    }
+
+    private void definirRegulamentacao() {
+        System.out.println();
+        System.out.println("Regulamentacao de convivencia:");
+        System.out.println("1 - Justa (arrecada 20% a menos)");
+        System.out.println("2 - Moderada (arrecadacao padrao)");
+        System.out.println("3 - Severa (arrecada 30% a mais)");
+        System.out.print("Escolha o nivel: ");
+
+        int opcao = lerOpcao();
+        String nivel = null;
+        switch (opcao) {
+            case 1:
+                nivel = Governo.NIVEL_JUSTA;
+                break;
+
+            case 2:
+                nivel = Governo.NIVEL_MODERADA;
+                break;
+
+            case 3:
+                nivel = Governo.NIVEL_SEVERA;
+                break;
+
+            default:
+                break;
+        }
+
+        if (nivel != null && governo.definirRegulamentacao(cidade, nivel)) {
+            System.out.println("Regulamentacao definida: " + nivel + ".");
+        } 
+        
+        else {
+            System.out.println("Nivel invalido. Escolha 1, 2 ou 3.");
+        }
+    }
+
     private void exibirSobre() {
         System.out.println();
         System.out.println("Voce governa uma cidade da regiao de Kanto e precisa");
-        System.out.println("equilibrar alimentos, territorios, taxas municipais,");
+        System.out.println("equilibrar alimentos, territorios, taxas da Liga Pokemon,");
         System.out.println("convivencia e defesa para fazer a regiao prosperar.");
         System.out.println("Gerencie Pokedolares, habitantes, patrulheiros e");
         System.out.println("construcoes como Centros Pokemon, ginasios e laboratorios.");
