@@ -14,6 +14,7 @@ public class Menu {
     private final Governo governo;
     private final Ginasios ginasios;
     private final Nobreza nobreza;
+    private final Eventos eventos;
 
     public Menu() {
         this.scanner = new Scanner(System.in);
@@ -23,6 +24,7 @@ public class Menu {
         this.governo = new Governo();
         this.ginasios = new Ginasios();
         this.nobreza = new Nobreza();
+        this.eventos = new Eventos();
     }
 
     public void executar() {
@@ -63,34 +65,33 @@ public class Menu {
         return scanner.hasNextLine() ? scanner.nextLine().trim() : null;
     }
 
-    private int lerOpcao() {
+    private int lerInteiro() {
         String linha = lerLinha();
-        if (linha == null) {
-            return 0;
+        if (linha == null || linha.isEmpty()) {
+            return -1;
         }
-        
         try {
             return Integer.parseInt(linha);
-        } 
-        
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return -1;
         }
     }
 
+    private int lerOpcao() {
+        return lerInteiro();
+    }
+
     private int lerQuantidade() {
-        String linha = lerLinha();
-        if (linha == null) {
-            return -1;
+        return lerInteiro();
+    }
+
+    // Método refatorado da Etapa 8: evita duplicacao do if de jogo em andamento nos submenus
+    private boolean exigirJogoEmAndamento() {
+        if (partida == null || cidade == null) {
+            System.out.println("Nenhum jogo em andamento. Escolha 1 - Novo jogo.");
+            return false;
         }
-        
-        try {
-            return Integer.parseInt(linha);
-        } 
-        
-        catch (NumberFormatException e) {
-            return -1;
-        }
+        return true;
     }
 
     private void processarOpcao(int opcao) {
@@ -98,39 +99,30 @@ public class Menu {
             case 1:
                 iniciarNovoJogo();
                 break;
-
             case 2:
                 exibirStatus();
                 break;
-
             case 3:
                 abrirMercado();
                 break;
-
             case 4:
                 abrirAgricultura();
                 break;
-
             case 5:
                 abrirGoverno();
                 break;
-
             case 6:
                 abrirGinasios();
                 break;
-
             case 7:
                 encerrarTurno();
                 break;
-
             case 8:
                 exibirClassificacao();
                 break;
-
             case 9:
                 exibirSobre();
                 break;
-
             case 0:
                 System.out.println("Ate a proxima, treinador!");
                 emExecucao = false;
@@ -218,35 +210,34 @@ public class Menu {
                     }
                     return cidades[numero - 1];
                 }
-            } 
-            
-            catch (NumberFormatException e) {}
+            } catch (NumberFormatException e) {}
             System.out.println("Opcao invalida. Digite um numero de 1 a " + cidades.length + ".");
         }
     }
 
     private void exibirStatus() {
-        if (cidade == null) {
-            System.out.println("Nenhum jogo em andamento. Escolha 1 - Novo jogo.");
-            return;
-        }
+        if (!exigirJogoEmAndamento()) return;
         cidade.exibirStatus();
 
         int prestigio = nobreza.calcularPrestigio(cidade);
         int necessario = nobreza.prestigioParaProximoTitulo(cidade.getDono());
         if (necessario == -1) {
             System.out.println("Prestigio:       " + prestigio + " (titulo maximo)");
-        } 
-        
-        else {
+        } else {
             System.out.println("Prestigio:       " + prestigio + " (proximo titulo exige " + necessario + ")");
         }
     }
 
     private void encerrarTurno() {
-        if (partida == null) {
-            System.out.println("Nenhum jogo em andamento. Escolha 1 - Novo jogo.");
-            return;
+        if (!exigirJogoEmAndamento()) return;
+
+        // Dispara evento aleatorio de Pokemon antes de avancar o turno
+        String mensagemEvento = eventos.tentarEventoAleatorio(cidade);
+        if (mensagemEvento != null) {
+            System.out.println();
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            System.out.println(mensagemEvento);
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
 
         boolean fimDoAno = partida.passarTurno();
@@ -257,9 +248,7 @@ public class Menu {
             System.out.println("========== O ANO " + (partida.getAnoAtual() - 1) + " TERMINOU ==========");
             if (promovidas.isEmpty()) {
                 System.out.println("Ninguem foi promovido neste ano.");
-            } 
-            
-            else {
+            } else {
                 for (Cidade promovida : promovidas) {
                     Jogador dono = promovida.getDono();
                     System.out.println(">>> " + dono.getNome() + " (" + promovida.getNome()
@@ -282,10 +271,7 @@ public class Menu {
     }
 
     private void exibirClassificacao() {
-        if (partida == null) {
-            System.out.println("Nenhum jogo em andamento. Escolha 1 - Novo jogo.");
-            return;
-        }
+        if (!exigirJogoEmAndamento()) return;
 
         List<Cidade> ordenadas = new ArrayList<>(partida.getCidades());
         ordenadas.sort((a, b) -> {
@@ -307,13 +293,9 @@ public class Menu {
             String proximo;
             if (necessario == -1) {
                 proximo = "titulo maximo alcancado";
-            } 
-            
-            else if (prestigio >= necessario) {
+            } else if (prestigio >= necessario) {
                 proximo = "prestigio ja suficiente para o proximo titulo";
-            } 
-            
-            else {
+            } else {
                 proximo = "faltam " + (necessario - prestigio) + " pontos para o proximo titulo";
             }
 
@@ -332,9 +314,7 @@ public class Menu {
         if (dono.ehMonarca()) {
             System.out.println(dono.getNome() + ", de " + vencedora.getNome() + ", chegou ao topo da Liga como "
                     + dono.getTitulo() + " e venceu!");
-        } 
-        
-        else {
+        } else {
             System.out.println("O prazo (" + partida.getAnoFinal() + ") acabou. Melhor colocado: "
                     + dono.getNome() + " (" + vencedora.getNome() + "), " + dono.getTitulo() + ".");
         }
@@ -344,10 +324,7 @@ public class Menu {
     }
 
     private void abrirMercado() {
-        if (cidade == null) {
-            System.out.println("Nenhum jogo em andamento. Escolha 1 - Novo jogo.");
-            return;
-        }
+        if (!exigirJogoEmAndamento()) return;
 
         boolean noMercado = true;
         while (noMercado) {
@@ -368,23 +345,18 @@ public class Menu {
                 case 1:
                     comprarAlimentos();
                     break;
-
                 case 2:
                     venderAlimentos();
                     break;
-
                 case 3:
                     comprarTerritorios();
                     break;
-
                 case 4:
                     venderTerritorios();
                     break;
-
                 case 0:
                     noMercado = false;
                     break;
-
                 default:
                     System.out.println("Opcao invalida. Escolha uma das opcoes do mercado.");
             }
@@ -396,14 +368,10 @@ public class Menu {
         int quantidade = lerQuantidade();
         if (quantidade <= 0) {
             System.out.println("Quantidade invalida. Digite um numero maior que zero.");
-        } 
-        
-        else if (mercado.comprarAlimentos(cidade, quantidade)) {
+        } else if (mercado.comprarAlimentos(cidade, quantidade)) {
             System.out.println("Compra realizada: " + quantidade + " alimentos por "
                     + (quantidade * mercado.getPrecoAlimento()) + " Pokedolares.");
-        } 
-        
-        else {
+        } else {
             System.out.println("Compra recusada: Pokedolares insuficientes.");
         }
     }
@@ -413,14 +381,10 @@ public class Menu {
         int quantidade = lerQuantidade();
         if (quantidade <= 0) {
             System.out.println("Quantidade invalida. Digite um numero maior que zero.");
-        } 
-        
-        else if (mercado.venderAlimentos(cidade, quantidade)) {
+        } else if (mercado.venderAlimentos(cidade, quantidade)) {
             System.out.println("Venda realizada: " + quantidade + " alimentos por "
                     + (quantidade * mercado.getPrecoAlimento()) + " Pokedolares.");
-        } 
-        
-        else {
+        } else {
             System.out.println("Venda recusada: alimentos insuficientes.");
         }
     }
@@ -430,14 +394,10 @@ public class Menu {
         int quantidade = lerQuantidade();
         if (quantidade <= 0) {
             System.out.println("Quantidade invalida. Digite um numero maior que zero.");
-        } 
-        
-        else if (mercado.comprarTerritorios(cidade, quantidade)) {
+        } else if (mercado.comprarTerritorios(cidade, quantidade)) {
             System.out.println("Compra realizada: " + quantidade + " hectares por "
                     + (quantidade * mercado.getPrecoTerritorio()) + " Pokedolares.");
-        } 
-        
-        else {
+        } else {
             System.out.println("Compra recusada: Pokedolares insuficientes.");
         }
     }
@@ -447,23 +407,16 @@ public class Menu {
         int quantidade = lerQuantidade();
         if (quantidade <= 0) {
             System.out.println("Quantidade invalida. Digite um numero maior que zero.");
-        } 
-        
-        else if (mercado.venderTerritorios(cidade, quantidade)) {
+        } else if (mercado.venderTerritorios(cidade, quantidade)) {
             System.out.println("Venda realizada: " + quantidade + " hectares por "
                     + (quantidade * mercado.getPrecoTerritorio()) + " Pokedolares.");
-        } 
-        
-        else {
+        } else {
             System.out.println("Venda recusada: territorios insuficientes.");
         }
     }
 
     private void abrirAgricultura() {
-        if (cidade == null) {
-            System.out.println("Nenhum jogo em andamento. Escolha 1 - Novo jogo.");
-            return;
-        }
+        if (!exigirJogoEmAndamento()) return;
 
         boolean naAgricultura = true;
         while (naAgricultura) {
@@ -527,23 +480,16 @@ public class Menu {
         if (habitantesDepois > habitantesAntes) {
             System.out.println("Comida suficiente! Habitantes: " + habitantesAntes
                     + " -> " + habitantesDepois);
-        } 
-        
-        else if (habitantesDepois < habitantesAntes) {
+        } else if (habitantesDepois < habitantesAntes) {
             System.out.println("Faltou comida! Habitantes: " + habitantesAntes
                     + " -> " + habitantesDepois);
-        } 
-        
-        else {
+        } else {
             System.out.println("A populacao se manteve em " + habitantesDepois + " habitantes.");
         }
     }
 
     private void abrirGoverno() {
-        if (cidade == null) {
-            System.out.println("Nenhum jogo em andamento. Escolha 1 - Novo jogo.");
-            return;
-        }
+        if (!exigirJogoEmAndamento()) return;
 
         boolean noGoverno = true;
         while (noGoverno) {
@@ -562,19 +508,15 @@ public class Menu {
                 case 1:
                     arrecadarTaxas();
                     break;
-
                 case 2:
                     definirTaxaLiga();
                     break;
-
                 case 3:
                     definirRegulamentacao();
                     break;
-
                 case 0:
                     noGoverno = false;
                     break;
-
                 default:
                     System.out.println("Opcao invalida. Escolha uma das opcoes do governo.");
             }
@@ -600,9 +542,7 @@ public class Menu {
 
         if (governo.definirTaxaLiga(cidade, taxa)) {
             System.out.println("Taxa da Liga definida em " + taxa + "%.");
-        } 
-        
-        else {
+        } else {
             System.out.println("Taxa invalida. Digite um numero de 0 a 50.");
         }
     }
@@ -621,33 +561,25 @@ public class Menu {
             case 1:
                 nivel = Governo.NIVEL_JUSTA;
                 break;
-
             case 2:
                 nivel = Governo.NIVEL_MODERADA;
                 break;
-
             case 3:
                 nivel = Governo.NIVEL_SEVERA;
                 break;
-
             default:
                 break;
         }
 
         if (nivel != null && governo.definirRegulamentacao(cidade, nivel)) {
             System.out.println("Regulamentacao definida: " + nivel + ".");
-        } 
-        
-        else {
+        } else {
             System.out.println("Nivel invalido. Escolha 1, 2 ou 3.");
         }
     }
 
     private void abrirGinasios() {
-        if (cidade == null) {
-            System.out.println("Nenhum jogo em andamento. Escolha 1 - Novo jogo.");
-            return;
-        }
+        if (!exigirJogoEmAndamento()) return;
 
         boolean noGinasio = true;
         while (noGinasio) {
@@ -670,15 +602,12 @@ public class Menu {
                 case 1:
                     recrutarTreinadores();
                     break;
-
                 case 2:
                     construirGinasios();
                     break;
-
                 case 0:
                     noGinasio = false;
                     break;
-
                 default:
                     System.out.println("Opcao invalida. Escolha uma das opcoes dos ginasios.");
             }
@@ -690,15 +619,11 @@ public class Menu {
         int quantidade = lerQuantidade();
         if (quantidade <= 0) {
             System.out.println("Quantidade invalida. Digite um numero maior que zero.");
-        } 
-        
-        else if (ginasios.recrutarTreinadores(cidade, quantidade)) {
+        } else if (ginasios.recrutarTreinadores(cidade, quantidade)) {
             System.out.println("Recrutamento realizado: " + quantidade + " treinadores por "
                     + ((long) quantidade * ginasios.getPrecoTreinador()) + " Pokedolares e "
                     + quantidade + " habitantes.");
-        } 
-        
-        else {
+        } else {
             System.out.println("Recrutamento recusado: voce precisa de "
                     + ((long) quantidade * ginasios.getPrecoTreinador()) + " Pokedolares e "
                     + quantidade + " habitantes disponiveis.");
@@ -710,14 +635,10 @@ public class Menu {
         int quantidade = lerQuantidade();
         if (quantidade <= 0) {
             System.out.println("Quantidade invalida. Digite um numero maior que zero.");
-        } 
-        
-        else if (ginasios.construirGinasios(cidade, quantidade)) {
+        } else if (ginasios.construirGinasios(cidade, quantidade)) {
             System.out.println("Construcao realizada: " + quantidade + " ginasios por "
                     + ((long) quantidade * ginasios.getPrecoGinasio()) + " Pokedolares.");
-        } 
-        
-        else {
+        } else {
             System.out.println("Construcao recusada: Pokedolares insuficientes.");
         }
     }
@@ -729,6 +650,6 @@ public class Menu {
         System.out.println("taxas da Liga Pokemon e investe em treinadores e ginasios.");
         System.out.println("Seu prestigio decide sua posicao na Liga, de Treinador Novato");
         System.out.println("ate Campeao Mundial. Quem chegar primeiro ao topo vence;");
-        System.out.println("se ninguem chegar ate o ano final, vence o melhor colocado na associação da LIga");
+        System.out.println("se ninguem chegar ate o ano final, vence o melhor colocado na associacao da Liga.");
     }
 }

@@ -1,7 +1,5 @@
 package region;
 
-import java.util.List;
-
 public class Testes {
     private static int aprovados = 0;
     private static int reprovados = 0;
