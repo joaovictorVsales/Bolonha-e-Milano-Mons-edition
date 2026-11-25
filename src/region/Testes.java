@@ -5,7 +5,7 @@ public class Testes {
     private static int reprovados = 0;
 
     public static void main(String[] args) {
-        System.out.println("===== TESTES BOLONHA E MILANO (POKEMON EDITION) =====");
+        System.out.println("===== TESTES BOLONHA E MILANO - POKEMON EDITION =====");
         
         testarCidade();
         testarMercado();
