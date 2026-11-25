@@ -24,7 +24,7 @@
 | 🍖 Alimentos e ração Pokémon | O estoque que alimenta a população |
 | 👥 Habitantes | A população, que trabalha a terra e paga as taxas |
 | 🛡️ Patrulheiros e treinadores de defesa | A força de defesa da região |
-| 🏥 Centros Pokémon, ginásios e laboratórios | A infraestrutura construída |
+| 🏥 Ginásios | A infraestrutura construída |
 
 ### O que você pode fazer
 
