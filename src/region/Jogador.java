@@ -11,12 +11,9 @@ public class Jogador {
     public Jogador(String nome) {
         if (nome == null || nome.isBlank()) {
             this.nome = NOME_PADRAO;
-        } 
-        
-        else {
+        } else {
             this.nome = nome.trim();
         }
-        
         this.titulo = TITULO_INICIAL;
     }
 
@@ -26,5 +23,9 @@ public class Jogador {
 
     public String getTitulo() {
         return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
     }
 }
