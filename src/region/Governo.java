@@ -12,10 +12,16 @@ public class Governo {
     private static final double MULTIPLICADOR_SEVERA = 1.3;
 
     public int arrecadarTaxas(Cidade cidade) {
+        if (cidade.isTaxasArrecadadas()) {
+            return -1;
+        }
+
         int base = cidade.getHabitantes() * cidade.getTaxaLiga() / 100;
         double multiplicador = multiplicadorPara(cidade.getRegulamentacao());
         int arrecadado = (int) (base * multiplicador);
         cidade.adicionarPokedolares(arrecadado);
+
+        cidade.marcarTaxasArrecadadas();
         return arrecadado;
     }
 

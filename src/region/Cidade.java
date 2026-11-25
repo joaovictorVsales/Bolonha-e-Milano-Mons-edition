@@ -16,9 +16,9 @@ public class Cidade {
     private static final int TAXA_LIGA_INICIAL = 10;
     private static final String REGULAMENTACAO_INICIAL = "Moderada";
 
-    private String nome;
+    private final String nome;
     private int anoAtual;
-    private Jogador dono;
+    private final Jogador dono;
     private int pokedolares;
     private int territorios;
     private int alimentos;
@@ -27,11 +27,14 @@ public class Cidade {
     private String regulamentacao;
     private int treinadores;
     private int ginasios;
+    private boolean colheitaFeita;
+    private boolean taxasArrecadadas;
 
     public Cidade(String nome, Jogador dono) {
         if (!nomeValido(nome)) {
             throw new IllegalArgumentException("Cidade invalida: " + nome);
         }
+
         this.nome = nome;
         this.dono = dono;
         this.anoAtual = ANO_INICIAL;
@@ -43,6 +46,8 @@ public class Cidade {
         this.regulamentacao = REGULAMENTACAO_INICIAL;
         this.treinadores = 0;
         this.ginasios = 0;
+        this.colheitaFeita = false;
+        this.taxasArrecadadas = false;
     }
 
     public static boolean nomeValido(String nome) {
@@ -55,15 +60,21 @@ public class Cidade {
     }
 
     public String getNome() { return nome; }
-
     public int getAnoAtual() { return anoAtual; }
-
     public Jogador getDono() { return dono; }
+    public void avancarAno() {
+        anoAtual++;
+        colheitaFeita = false;
+        taxasArrecadadas = false;
+    }
 
-    public void avancarAno() { anoAtual++; }
+    public boolean isColheitaFeita() { return colheitaFeita; }
+    public void marcarColheitaFeita() { colheitaFeita = true; }
+    public boolean isTaxasArrecadadas() { return taxasArrecadadas; }
+    public void marcarTaxasArrecadadas() { taxasArrecadadas = true; }
+
 
     public int getPokedolares() { return pokedolares; }
-
     public void adicionarPokedolares(int quantidade) {
         if (quantidade > 0) pokedolares += quantidade;
     }
@@ -99,7 +110,6 @@ public class Cidade {
     }
 
     public int getHabitantes() { return habitantes; }
-
     public void adicionarHabitantes(int quantidade) {
         if (quantidade > 0) habitantes += quantidade;
     }
@@ -111,7 +121,6 @@ public class Cidade {
     }
 
     public int getTreinadores() { return treinadores; }
-
     public void adicionarTreinadores(int quantidade) {
         if (quantidade > 0) treinadores += quantidade;
     }
@@ -123,7 +132,6 @@ public class Cidade {
     }
 
     public int getGinasios() { return ginasios; }
-
     public void adicionarGinasios(int quantidade) {
         if (quantidade > 0) ginasios += quantidade;
     }
@@ -135,11 +143,8 @@ public class Cidade {
     }
 
     public int getTaxaLiga() { return taxaLiga; }
-
     public void setTaxaLiga(int taxaLiga) { this.taxaLiga = taxaLiga; }
-
     public String getRegulamentacao() { return regulamentacao; }
-
     public void setRegulamentacao(String regulamentacao) { this.regulamentacao = regulamentacao; }
 
     public void exibirStatus() {
@@ -156,5 +161,7 @@ public class Cidade {
         System.out.println("Regulamentacao: " + regulamentacao);
         System.out.println("Treinadores:    " + treinadores);
         System.out.println("Ginasios:       " + ginasios);
+        System.out.println("Colheita do ano: " + (colheitaFeita ? "feita" : "pendente"));
+        System.out.println("Taxas do ano:    " + (taxasArrecadadas ? "arrecadadas" : "pendentes"));
     }
 }
