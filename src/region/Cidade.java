@@ -6,7 +6,6 @@ public class Cidade {
         "Pallet Town", "Viridian", "Pewter", "Cerulean", "Vermilion",
         "Lavender", "Celadon", "Fuchsia", "Saffron", "Cinnabar"
     };
-
     public static final String CIDADE_PADRAO = CIDADES_DISPONIVEIS[0];
 
     private static final int ANO_INICIAL = 1986;
@@ -26,12 +25,13 @@ public class Cidade {
     private int habitantes;
     private int taxaLiga;
     private String regulamentacao;
+    private int treinadores;
+    private int ginasios;
 
     public Cidade(String nome, Jogador dono) {
         if (!nomeValido(nome)) {
             throw new IllegalArgumentException("Cidade invalida: " + nome);
         }
-
         this.nome = nome;
         this.dono = dono;
         this.anoAtual = ANO_INICIAL;
@@ -41,6 +41,8 @@ public class Cidade {
         this.habitantes = HABITANTES_INICIAIS;
         this.taxaLiga = TAXA_LIGA_INICIAL;
         this.regulamentacao = REGULAMENTACAO_INICIAL;
+        this.treinadores = 0;
+        this.ginasios = 0;
     }
 
     public static boolean nomeValido(String nome) {
@@ -108,6 +110,30 @@ public class Cidade {
         return true;
     }
 
+    public int getTreinadores() { return treinadores; }
+
+    public void adicionarTreinadores(int quantidade) {
+        if (quantidade > 0) treinadores += quantidade;
+    }
+
+    public boolean removerTreinadores(int quantidade) {
+        if (quantidade <= 0 || quantidade > treinadores) return false;
+        treinadores -= quantidade;
+        return true;
+    }
+
+    public int getGinasios() { return ginasios; }
+
+    public void adicionarGinasios(int quantidade) {
+        if (quantidade > 0) ginasios += quantidade;
+    }
+
+    public boolean removerGinasios(int quantidade) {
+        if (quantidade <= 0 || quantidade > ginasios) return false;
+        ginasios -= quantidade;
+        return true;
+    }
+
     public int getTaxaLiga() { return taxaLiga; }
 
     public void setTaxaLiga(int taxaLiga) { this.taxaLiga = taxaLiga; }
@@ -128,5 +154,7 @@ public class Cidade {
         System.out.println("Habitantes:     " + habitantes);
         System.out.println("Taxa da Liga:   " + taxaLiga + "%");
         System.out.println("Regulamentacao: " + regulamentacao);
+        System.out.println("Treinadores:    " + treinadores);
+        System.out.println("Ginasios:       " + ginasios);
     }
 }

@@ -10,6 +10,7 @@ public class Menu {
     private Mercado mercado;
     private Agricultura agricultura;
     private Governo governo;
+    private Ginasios ginasios;
 
     public Menu() {
         this.scanner = new Scanner(System.in);
@@ -17,6 +18,7 @@ public class Menu {
         this.mercado = new Mercado();
         this.agricultura = new Agricultura();
         this.governo = new Governo();
+        this.ginasios = new Ginasios();
     }
 
     public void executar() {
@@ -38,7 +40,8 @@ public class Menu {
         System.out.println("3 - Mercado");
         System.out.println("4 - Agricultura");
         System.out.println("5 - Governo");
-        System.out.println("6 - Sobre o jogo");
+        System.out.println("6 - Ginasios");
+        System.out.println("7 - Sobre o jogo");
         System.out.println("0 - Sair");
         System.out.print("Escolha uma opcao: ");
     }
@@ -52,12 +55,9 @@ public class Menu {
         if (linha == null) {
             return 0;
         }
-
         try {
             return Integer.parseInt(linha);
-        } 
-        
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return -1;
         }
     }
@@ -67,48 +67,41 @@ public class Menu {
         if (linha == null) {
             return -1;
         }
-
         try {
             return Integer.parseInt(linha);
-        } 
-        
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return -1;
         }
     }
 
     private void processarOpcao(int opcao) {
         switch (opcao) {
-
             case 1:
                 iniciarNovoJogo();
                 break;
-
             case 2:
                 exibirStatus();
                 break;
-
             case 3:
                 abrirMercado();
                 break;
-
             case 4:
                 abrirAgricultura();
                 break;
-
             case 5:
                 abrirGoverno();
                 break;
-
             case 6:
+                abrirGinasios();
+                break;
+            case 7:
                 exibirSobre();
                 break;
-
             case 0:
                 System.out.println("Ate a proxima, treinador!");
                 emExecucao = false;
+                scanner.close();
                 break;
-
             default:
                 System.out.println("Opcao invalida. Escolha uma das opcoes do menu.");
         }
@@ -144,7 +137,6 @@ public class Menu {
                     return cidades[numero - 1];
                 }
             } catch (NumberFormatException e) {}
-
             System.out.println("Opcao invalida. Digite um numero de 1 a " + cidades.length + ".");
         }
     }
@@ -181,27 +173,21 @@ public class Menu {
 
             int opcao = lerOpcao();
             switch (opcao) {
-
                 case 1:
                     comprarAlimentos();
                     break;
-
                 case 2:
                     venderAlimentos();
                     break;
-
                 case 3:
                     comprarTerritorios();
                     break;
-
                 case 4:
                     venderTerritorios();
                     break;
-
                 case 0:
                     noMercado = false;
                     break;
-
                 default:
                     System.out.println("Opcao invalida. Escolha uma das opcoes do mercado.");
             }
@@ -213,14 +199,10 @@ public class Menu {
         int quantidade = lerQuantidade();
         if (quantidade <= 0) {
             System.out.println("Quantidade invalida. Digite um numero maior que zero.");
-        } 
-        
-        else if (mercado.comprarAlimentos(cidade, quantidade)) {
+        } else if (mercado.comprarAlimentos(cidade, quantidade)) {
             System.out.println("Compra realizada: " + quantidade + " alimentos por "
                     + (quantidade * mercado.getPrecoAlimento()) + " Pokedolares.");
-        } 
-        
-        else {
+        } else {
             System.out.println("Compra recusada: Pokedolares insuficientes.");
         }
     }
@@ -230,14 +212,10 @@ public class Menu {
         int quantidade = lerQuantidade();
         if (quantidade <= 0) {
             System.out.println("Quantidade invalida. Digite um numero maior que zero.");
-        } 
-        
-        else if (mercado.venderAlimentos(cidade, quantidade)) {
+        } else if (mercado.venderAlimentos(cidade, quantidade)) {
             System.out.println("Venda realizada: " + quantidade + " alimentos por "
                     + (quantidade * mercado.getPrecoAlimento()) + " Pokedolares.");
-        } 
-        
-        else {
+        } else {
             System.out.println("Venda recusada: alimentos insuficientes.");
         }
     }
@@ -247,14 +225,10 @@ public class Menu {
         int quantidade = lerQuantidade();
         if (quantidade <= 0) {
             System.out.println("Quantidade invalida. Digite um numero maior que zero.");
-        } 
-        
-        else if (mercado.comprarTerritorios(cidade, quantidade)) {
+        } else if (mercado.comprarTerritorios(cidade, quantidade)) {
             System.out.println("Compra realizada: " + quantidade + " hectares por "
                     + (quantidade * mercado.getPrecoTerritorio()) + " Pokedolares.");
-        } 
-        
-        else {
+        } else {
             System.out.println("Compra recusada: Pokedolares insuficientes.");
         }
     }
@@ -264,14 +238,10 @@ public class Menu {
         int quantidade = lerQuantidade();
         if (quantidade <= 0) {
             System.out.println("Quantidade invalida. Digite um numero maior que zero.");
-        } 
-        
-        else if (mercado.venderTerritorios(cidade, quantidade)) {
+        } else if (mercado.venderTerritorios(cidade, quantidade)) {
             System.out.println("Venda realizada: " + quantidade + " hectares por "
                     + (quantidade * mercado.getPrecoTerritorio()) + " Pokedolares.");
-        } 
-        
-        else {
+        } else {
             System.out.println("Venda recusada: territorios insuficientes.");
         }
     }
@@ -299,15 +269,12 @@ public class Menu {
                 case 1:
                     colher();
                     break;
-
                 case 2:
                     distribuirAlimentos();
                     break;
-
                 case 0:
                     naAgricultura = false;
                     break;
-
                 default:
                     System.out.println("Opcao invalida. Escolha uma das opcoes da agricultura.");
             }
@@ -320,9 +287,7 @@ public class Menu {
 
         if (hectares == 0) {
             System.out.println("Nada foi plantado: faltam habitantes, territorios ou alimentos para sementes.");
-        } 
-        
-        else {
+        } else {
             System.out.println("Colheita realizada: " + hectares + " hectares cultivados.");
             System.out.println("Alimentos: " + alimentosAntes + " -> " + cidade.getAlimentos());
         }
@@ -347,14 +312,10 @@ public class Menu {
         if (habitantesDepois > habitantesAntes) {
             System.out.println("Comida suficiente! Habitantes: " + habitantesAntes
                     + " -> " + habitantesDepois);
-        } 
-        
-        else if (habitantesDepois < habitantesAntes) {
+        } else if (habitantesDepois < habitantesAntes) {
             System.out.println("Faltou comida! Habitantes: " + habitantesAntes
                     + " -> " + habitantesDepois);
-        } 
-        
-        else {
+        } else {
             System.out.println("A populacao se manteve em " + habitantesDepois + " habitantes.");
         }
     }
@@ -383,19 +344,15 @@ public class Menu {
                 case 1:
                     arrecadarTaxas();
                     break;
-
                 case 2:
                     definirTaxaLiga();
                     break;
-
                 case 3:
                     definirRegulamentacao();
                     break;
-
                 case 0:
                     noGoverno = false;
                     break;
-
                 default:
                     System.out.println("Opcao invalida. Escolha uma das opcoes do governo.");
             }
@@ -417,9 +374,7 @@ public class Menu {
 
         if (governo.definirTaxaLiga(cidade, taxa)) {
             System.out.println("Taxa da Liga definida em " + taxa + "%.");
-        } 
-        
-        else {
+        } else {
             System.out.println("Taxa invalida. Digite um numero de 0 a 50.");
         }
     }
@@ -438,25 +393,88 @@ public class Menu {
             case 1:
                 nivel = Governo.NIVEL_JUSTA;
                 break;
-
             case 2:
                 nivel = Governo.NIVEL_MODERADA;
                 break;
-
             case 3:
                 nivel = Governo.NIVEL_SEVERA;
                 break;
-
             default:
                 break;
         }
 
         if (nivel != null && governo.definirRegulamentacao(cidade, nivel)) {
             System.out.println("Regulamentacao definida: " + nivel + ".");
-        } 
-        
-        else {
+        } else {
             System.out.println("Nivel invalido. Escolha 1, 2 ou 3.");
+        }
+    }
+
+    private void abrirGinasios() {
+        if (cidade == null) {
+            System.out.println("Nenhum jogo em andamento. Escolha 1 - Novo jogo.");
+            return;
+        }
+
+        boolean noGinasio = true;
+        while (noGinasio) {
+            System.out.println();
+            System.out.println("------------------ GINASIOS -----------------");
+            System.out.println("Pokedolares: " + cidade.getPokedolares()
+                    + " | Habitantes: " + cidade.getHabitantes()
+                    + " | Treinadores: " + cidade.getTreinadores()
+                    + " | Ginasios: " + cidade.getGinasios());
+            System.out.println("Treinador: " + ginasios.getPrecoTreinador()
+                    + " Pokedolares + 1 habitante | Ginasio: "
+                    + ginasios.getPrecoGinasio() + " Pokedolares");
+            System.out.println("1 - Recrutar treinadores");
+            System.out.println("2 - Construir ginasios");
+            System.out.println("0 - Voltar");
+            System.out.print("Escolha uma opcao: ");
+
+            int opcao = lerOpcao();
+            switch (opcao) {
+                case 1:
+                    recrutarTreinadores();
+                    break;
+                case 2:
+                    construirGinasios();
+                    break;
+                case 0:
+                    noGinasio = false;
+                    break;
+                default:
+                    System.out.println("Opcao invalida. Escolha uma das opcoes dos ginasios.");
+            }
+        }
+    }
+
+    private void recrutarTreinadores() {
+        System.out.print("Quantidade de treinadores para recrutar: ");
+        int quantidade = lerQuantidade();
+        if (quantidade <= 0) {
+            System.out.println("Quantidade invalida. Digite um numero maior que zero.");
+        } else if (ginasios.recrutarTreinadores(cidade, quantidade)) {
+            System.out.println("Recrutamento realizado: " + quantidade + " treinadores por "
+                    + ((long) quantidade * ginasios.getPrecoTreinador()) + " Pokedolares e "
+                    + quantidade + " habitantes.");
+        } else {
+            System.out.println("Recrutamento recusado: voce precisa de "
+                    + ((long) quantidade * ginasios.getPrecoTreinador()) + " Pokedolares e "
+                    + quantidade + " habitantes disponiveis.");
+        }
+    }
+
+    private void construirGinasios() {
+        System.out.print("Quantidade de ginasios para construir: ");
+        int quantidade = lerQuantidade();
+        if (quantidade <= 0) {
+            System.out.println("Quantidade invalida. Digite um numero maior que zero.");
+        } else if (ginasios.construirGinasios(cidade, quantidade)) {
+            System.out.println("Construcao realizada: " + quantidade + " ginasios por "
+                    + ((long) quantidade * ginasios.getPrecoGinasio()) + " Pokedolares.");
+        } else {
+            System.out.println("Construcao recusada: Pokedolares insuficientes.");
         }
     }
 
@@ -465,7 +483,7 @@ public class Menu {
         System.out.println("Voce governa uma cidade da regiao de Kanto e precisa");
         System.out.println("equilibrar alimentos, territorios, taxas da Liga Pokemon,");
         System.out.println("convivencia e defesa para fazer a regiao prosperar.");
-        System.out.println("Gerencie Pokedolares, habitantes, patrulheiros e");
-        System.out.println("construcoes como Centros Pokemon, ginasios e laboratorios.");
+        System.out.println("Gerencie Pokedolares, habitantes, treinadores e");
+        System.out.println("ginasios para fazer sua cidade crescer.");
     }
 }
