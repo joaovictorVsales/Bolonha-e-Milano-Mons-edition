@@ -8,11 +8,13 @@ public class Menu {
     private Jogador jogador;
     private Cidade cidade;
     private Mercado mercado;
+    private Agricultura agricultura;
 
     public Menu() {
         this.scanner = new Scanner(System.in);
         this.emExecucao = true;
         this.mercado = new Mercado();
+        this.agricultura = new Agricultura();
     }
 
     public void executar() {
@@ -21,6 +23,7 @@ public class Menu {
             int opcao = lerOpcao();
             processarOpcao(opcao);
         }
+        scanner.close();
     }
 
     private void exibirOpcoes() {
@@ -32,7 +35,8 @@ public class Menu {
         System.out.println("1 - Novo jogo");
         System.out.println("2 - Ver status da cidade");
         System.out.println("3 - Mercado");
-        System.out.println("4 - Sobre o jogo");
+        System.out.println("4 - Agricultura");
+        System.out.println("5 - Sobre o jogo");
         System.out.println("0 - Sair");
         System.out.print("Escolha uma opcao: ");
     }
@@ -62,7 +66,7 @@ public class Menu {
         }
         try {
             return Integer.parseInt(linha);
-        }
+        } 
         catch (NumberFormatException e) {
             return -1;
         }
@@ -84,6 +88,10 @@ public class Menu {
                 break;
 
             case 4:
+                abrirAgricultura();
+                break;
+
+            case 5:
                 exibirSobre();
                 break;
 
@@ -121,14 +129,14 @@ public class Menu {
             if (linha == null || linha.isEmpty()) {
                 return Cidade.CIDADE_PADRAO;
             }
-
             try {
                 int numero = Integer.parseInt(linha);
                 if (numero >= 1 && numero <= cidades.length) {
                     return cidades[numero - 1];
                 }
-            } 
-            catch (NumberFormatException e) {}
+            } catch (NumberFormatException e) {
+                // cai na mensagem de erro abaixo
+            }
             System.out.println("Opcao invalida. Digite um numero de 1 a " + cidades.length + ".");
         }
     }
@@ -165,6 +173,7 @@ public class Menu {
 
             int opcao = lerOpcao();
             switch (opcao) {
+
                 case 1:
                     comprarAlimentos();
                     break;
@@ -198,7 +207,7 @@ public class Menu {
         if (quantidade <= 0) {
             System.out.println("Quantidade invalida. Digite um numero maior que zero.");
         } 
-        
+
         else if (mercado.comprarAlimentos(cidade, quantidade)) {
             System.out.println("Compra realizada: " + quantidade + " alimentos por "
                     + (quantidade * mercado.getPrecoAlimento()) + " Pokedolares.");
@@ -257,6 +266,88 @@ public class Menu {
         
         else {
             System.out.println("Venda recusada: territorios insuficientes.");
+        }
+    }
+
+    private void abrirAgricultura() {
+        if (cidade == null) {
+            System.out.println("Nenhum jogo em andamento. Escolha 1 - Novo jogo.");
+            return;
+        }
+
+        boolean naAgricultura = true;
+        while (naAgricultura) {
+            System.out.println();
+            System.out.println("---------------- AGRICULTURA ----------------");
+            System.out.println("Territorios: " + cidade.getTerritorios()
+                    + " | Habitantes: " + cidade.getHabitantes()
+                    + " | Alimentos: " + cidade.getAlimentos());
+            System.out.println("1 - Colher (processar safra)");
+            System.out.println("2 - Distribuir alimentos");
+            System.out.println("0 - Voltar");
+            System.out.print("Escolha uma opcao: ");
+
+            int opcao = lerOpcao();
+            switch (opcao) {
+                case 1:
+                    colher();
+                    break;
+
+                case 2:
+                    distribuirAlimentos();
+                    break;
+
+                case 0:
+                    naAgricultura = false;
+                    break;
+
+                default:
+                    System.out.println("Opcao invalida. Escolha uma das opcoes da agricultura.");
+            }
+        }
+    }
+
+    private void colher() {
+        int alimentosAntes = cidade.getAlimentos();
+        int hectares = agricultura.processarColheita(cidade);
+
+        if (hectares == 0) {
+            System.out.println("Nada foi plantado: faltam habitantes, territorios ou alimentos para sementes.");
+        } 
+        
+        else {
+            System.out.println("Colheita realizada: " + hectares + " hectares cultivados.");
+            System.out.println("Alimentos: " + alimentosAntes + " -> " + cidade.getAlimentos());
+        }
+    }
+
+    private void distribuirAlimentos() {
+        System.out.print("Percentual do estoque a distribuir (20 a 80): ");
+        int percentual = lerQuantidade();
+
+        int alimentosAntes = cidade.getAlimentos();
+        int habitantesAntes = cidade.getHabitantes();
+
+        if (!agricultura.distribuirAlimentos(cidade, percentual)) {
+            System.out.println("Percentual invalido. Digite um numero de 20 a 80.");
+            return;
+        }
+
+        int distribuido = alimentosAntes - cidade.getAlimentos();
+        int habitantesDepois = cidade.getHabitantes();
+        System.out.println("Foram distribuidos " + distribuido + " alimentos.");
+
+        if (habitantesDepois > habitantesAntes) {
+            System.out.println("Comida suficiente! Habitantes: " + habitantesAntes
+                    + " -> " + habitantesDepois);
+        } 
+        else if (habitantesDepois < habitantesAntes) {
+            System.out.println("Faltou comida! Habitantes: " + habitantesAntes
+                    + " -> " + habitantesDepois);
+        } 
+        
+        else {
+            System.out.println("A populacao se manteve em " + habitantesDepois + " habitantes.");
         }
     }
 

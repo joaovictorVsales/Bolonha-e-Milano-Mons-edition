@@ -6,13 +6,14 @@ public class Cidade {
         "Pallet Town", "Viridian", "Pewter", "Cerulean", "Vermilion",
         "Lavender", "Celadon", "Fuchsia", "Saffron", "Cinnabar"
     };
-    
+
     public static final String CIDADE_PADRAO = CIDADES_DISPONIVEIS[0];
 
     private static final int ANO_INICIAL = 1986;
     private static final int POKEDOLARES_INICIAIS = 1000;
     private static final int TERRITORIOS_INICIAIS = 10000;
     private static final int ALIMENTOS_INICIAIS = 500;
+    private static final int HABITANTES_INICIAIS = 200;
 
     private String nome;
     private int anoAtual;
@@ -20,6 +21,7 @@ public class Cidade {
     private int pokedolares;
     private int territorios;
     private int alimentos;
+    private int habitantes;
 
     public Cidade(String nome, Jogador dono) {
         if (!nomeValido(nome)) {
@@ -32,6 +34,7 @@ public class Cidade {
         this.pokedolares = POKEDOLARES_INICIAIS;
         this.territorios = TERRITORIOS_INICIAIS;
         this.alimentos = ALIMENTOS_INICIAIS;
+        this.habitantes = HABITANTES_INICIAIS;
     }
 
     public static boolean nomeValido(String nome) {
@@ -87,6 +90,18 @@ public class Cidade {
         return true;
     }
 
+    public int getHabitantes() { return habitantes; }
+
+    public void adicionarHabitantes(int quantidade) {
+        if (quantidade > 0) habitantes += quantidade;
+    }
+
+    public boolean removerHabitantes(int quantidade) {
+        if (quantidade <= 0 || quantidade > habitantes) return false;
+        habitantes -= quantidade;
+        return true;
+    }
+
     public void exibirStatus() {
         System.out.println();
         System.out.println("------------- STATUS DA CIDADE -------------");
@@ -96,5 +111,6 @@ public class Cidade {
         System.out.println("Pokedolares: " + pokedolares);
         System.out.println("Territorios: " + territorios + " hectares");
         System.out.println("Alimentos:   " + alimentos);
+        System.out.println("Habitantes:  " + habitantes);
     }
 }
